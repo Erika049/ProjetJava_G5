@@ -1,5 +1,5 @@
 /**
- * @author Laetitia, Arthur, Anthony
+ * @author Group 5
  * @version 1.0.8
  */
 package main;
@@ -23,7 +23,7 @@ import javax.swing.*;
 /**
  * The Class Main.
  *
- * @author Laetitia, Arthur, Anthony
+ * @author Group 5
  */
 public abstract class Main {
 
