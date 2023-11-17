@@ -18,7 +18,7 @@ public final class Controller implements IController {
     /**
      * The speed
      */
-    private static final int speed = 200;
+    private static final int speed = 300;
 
     /**
      * The view
@@ -62,7 +62,11 @@ public final class Controller implements IController {
 
     private boolean canChange = true;
 
+    private int score;
 
+    private int remainingTime;
+
+    private int levelTime;
     /**
      * @param view
      * @param model
@@ -71,6 +75,10 @@ public final class Controller implements IController {
         this.setView(view);
         this.setModel(model);
         this.clearStackOrder();
+        this.score = 0;
+        this.remainingTime = 0;
+        this.levelTime =  120;// Total duration of the level
+        this.hasWon = false;
     }
 
     /**
@@ -78,6 +86,7 @@ public final class Controller implements IController {
      */
     @Override
     public final void play() {
+        int startTime = (int) System.currentTimeMillis()/1000;//time of start in seconds
         while (this.getModel().getMyPlayer().isAlive() == true && hasWon == false) {
 
             // --- Game Speed ---
@@ -94,6 +103,29 @@ public final class Controller implements IController {
 
             gDirection = gDirection + 1;
             rdirection = rand.nextInt(4);
+
+
+            // --- Update Remaining Time ---
+            int currentTime =  (int)  System.currentTimeMillis()/1000;//actual time in milliseconds
+            int elapsedTime = currentTime - startTime;//Time elapsed since the begining of the level in seconds
+            int remainingTime = levelTime - elapsedTime;//remaining time in seconds
+            if(remainingTime >= 0){
+                this.remainingTime = remainingTime;
+            }
+            if(remainingTime == 0){
+                killPlayer();
+            }
+            if(hasWon){
+                score += remainingTime;
+            }
+
+            // --- Update Score ---
+
+            int newDiamondsCollected  = this.getModel().getMyPlayer().getDiamonds();
+            if (newDiamondsCollected > score){
+                int diamondsDifference = newDiamondsCollected - score;
+                score = newDiamondsCollected;
+            }
 
             // --- Update Mobile Entities on Map
             for (int y = this.getModel().getMap().getHeight() - 1; y > 0; y--) {
@@ -127,7 +159,9 @@ public final class Controller implements IController {
             this.canChange = true;
             this.getView().followMyPlayer();
             this.getView().updateView();
-            this.getView().getBoardFrame().setTitle("BoulderDash - Diamond Counter: " + this.getModel().getMyPlayer().getDiamonds());
+            this.getView().getBoardFrame().setTitle("BoulderDash - Diamond Counter: " + score + " - Time: " + remainingTime + "s");
+
+
         }
     }
 
